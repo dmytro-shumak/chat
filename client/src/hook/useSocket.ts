@@ -1,26 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import { Socket, io } from "socket.io-client";
-import { AuthContext } from "../context/AuthContext/AuthContext";
+import { useContext } from "react";
+import { SocketContext, SocketContextProps } from "../context/SocketContext/SocketContext";
 
-export const useSocket = (serverUrl: string) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const { token } = useContext(AuthContext);
+export const useSocket = (): SocketContextProps => {
+  const context = useContext(SocketContext);
+  if (!context) {
+    throw new Error("useSocket must be used within a SocketProvider");
+  }
 
-  useEffect(() => {
-    let newSocket: Socket | null = null;
-    if (token) {
-      newSocket = io(serverUrl, {
-        query: {
-          token,
-        },
-      });
-
-      setSocket(newSocket);
-    }
-    return () => {
-      newSocket?.close();
-    };
-  }, [serverUrl, token]);
-
-  return socket;
+  return context;
 };

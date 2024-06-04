@@ -7,7 +7,7 @@ import { Message } from "../types/message";
 import { IUser } from "../types/user";
 
 const ChatPage: React.FC = () => {
-  const socket = useSocket("http://localhost:3000");
+  const { on, emit } = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
   const [offlineUsers, setOfflineUsers] = useState<IUser[]>([]);
@@ -20,27 +20,26 @@ const ChatPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!socket) return;
-
-    socket.on("loadMessages", (messages: Message[]) => {
+    on("loadMessages", (messages: Message[]) => {
       setMessages(messages);
     });
-    socket.on("message", (message: Message) => {
+    on("message", (message: Message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-    socket.on("activeUserList", (users: IUser[]) => {
+    on("activeUserList", (users: IUser[]) => {
+      console.log("users", users);
       setOnlineUsers(users);
     });
-    socket.on("offlineUserList", (users: IUser[]) => {
+    on("offlineUserList", (users: IUser[]) => {
       setOfflineUsers(users);
     });
-  }, [socket]);
+  }, [on]);
 
-  if (!user || !socket) return null;
+  if (!user) return null;
 
   const handleSendMessage = () => {
     if (inputValue.trim() !== "") {
-      socket.emit("sendMessage", inputValue);
+      emit("sendMessage", inputValue);
       setInputValue("");
     }
   };
@@ -58,8 +57,9 @@ const ChatPage: React.FC = () => {
           <textarea
             value={inputValue}
             onChange={handleInputChange}
-            placeholder="Type a message..."
-            className="max-w-[800px] w-full min-h-16 mt-4 p-2 border border-gray-300 rounded"
+            disabled={user.isMuted}
+            placeholder={user.isMuted ? "You are muted" : "Type a message..."}
+            className="max-w-[800px] w-full min-h-16 mt-4 p-2 border border-gray-300 rounded disabled:bg-gray-200"
           />
           <button
             onClick={handleSendMessage}

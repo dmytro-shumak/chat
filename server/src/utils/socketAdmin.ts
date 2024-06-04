@@ -7,6 +7,10 @@ export const handleSocketAdminConnection = async (socket: Socket, io: Server) =>
 
   socket.on("muteUser", async (id: string) => {
     await muteUser(id);
+
     io.emit("activeUserList", getOnlineUsers());
+
+    const offlineUsers = await getOfflineUsers();
+    socket.emit("offlineUserList", offlineUsers);
   });
 };

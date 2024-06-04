@@ -2,6 +2,7 @@ import { FC, useContext } from "react";
 import muteIcon from "../../assets/icons/mute-icon.svg";
 import unmuteIcon from "../../assets/icons/unmute-icon.svg";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { useSocket } from "../../hook/useSocket";
 import { IUser, UserRole } from "../../types/user";
 import { classNames } from "../../utils/classNames";
 import BanIcon from "../icons/BanIcon";
@@ -12,10 +13,15 @@ interface Props {
 }
 
 const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
+  const { emit } = useSocket();
   const { user: currentUser } = useContext(AuthContext);
   const isCurrentUserAdmin = currentUser?.role === UserRole.Admin;
 
   const isUserAdmin = user.role === UserRole.Admin;
+
+  const handleMuteUser = () => {
+    emit("muteUser", user._id);
+  };
 
   return (
     <div className="flex items-center">
@@ -28,7 +34,7 @@ const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
       {isUserAdmin && <span className="ml-2 text-sm text-gray-500">admin</span>}
       {isCurrentUserAdmin && shouldShowUserActions && (
         <>
-          <div className="w-5 h-5 ml-auto mr-2 cursor-pointer">
+          <div className="w-5 h-5 ml-auto mr-2 cursor-pointer" onClick={handleMuteUser}>
             {user.isMuted ? (
               <img src={muteIcon} alt="Mute Icon" />
             ) : (

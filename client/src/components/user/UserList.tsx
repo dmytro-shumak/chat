@@ -15,7 +15,7 @@ const UserList: FC<Props> = ({ users, title }) => {
       </h3>
       <div className="mt-2 gap-2 flex flex-col">
         {users.map((user) => (
-          <UserItem user={user} />
+          <UserItem user={user} key={user._id} />
         ))}
       </div>
     </div>

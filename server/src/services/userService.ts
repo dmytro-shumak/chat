@@ -1,50 +1,48 @@
 import User, { IUser } from "../model/User";
 
-interface User {
-  id: IUser["_id"];
+interface OnlineUser {
+  _id?: IUser["_id"];
   username: string;
   role: string;
-  muted: boolean;
-  banned: boolean;
+  isMuted: boolean;
+  isBanned: boolean;
 }
 
-const onlineUsers: User[] = [];
+const onlineUsers: OnlineUser[] = [];
 
-export const addOnlineUser = (userInfo: IUser): User => {
-  let user = onlineUsers.find((u) => u.id === userInfo._id);
+export const addOnlineUser = async (userInfo: IUser): Promise<OnlineUser> => {
+  let user: OnlineUser | undefined | null = onlineUsers.find((u) => u._id === userInfo._id);
   if (!user) {
-    user = {
-      id: userInfo._id,
-      username: userInfo.username,
-      muted: false,
-      banned: false,
-      role: userInfo.role,
-    };
+    user = await User.findById(userInfo._id);
+    if (!user) throw new Error("User not found");
+
     onlineUsers.push(user);
   }
   return user;
 };
 
-export const removeOnlineUser = (id: string): User | undefined => {
-  const index = onlineUsers.findIndex((user) => user.id === id);
+export const removeOnlineUser = (id: IUser["_id"]): OnlineUser | undefined => {
+  const index = onlineUsers.findIndex((user) => user._id === id);
   if (index !== -1) return onlineUsers.splice(index, 1)[0];
 };
 
-export const getOnlineUser = (id: string): User | undefined =>
-  onlineUsers.find((user) => user.id === id);
+export const getOnlineUser = (id: string): OnlineUser | undefined =>
+  onlineUsers.find((user) => user._id === id);
 
-export const getOnlineUsers = (): User[] => onlineUsers;
+export const getOnlineUsers = (): OnlineUser[] => onlineUsers;
 
 export const getOfflineUsers = async () => {
-  const test = await User.find({ _id: { $nin: onlineUsers.map((user) => user.id) } });
-  console.log("test", test);
-  return test;
+  const offlineUsers = await User.find({ _id: { $nin: onlineUsers.map((user) => user._id) } });
+  return offlineUsers;
 };
 
 export const muteUser = async (id: string) => {
-  await User.findByIdAndUpdate(id, { muted: true });
-  const user = getOnlineUser(id);
-  if (user) {
-    user.muted = true;
+  const user = await User.findById(id);
+  if (!user) throw new Error("User not found");
+
+  const updatedUser = await User.findByIdAndUpdate(id, { isMuted: !user.isMuted }, { new: true });
+  const onlineUser = getOnlineUser(id);
+  if (onlineUser) {
+    onlineUser.isMuted = !onlineUser.isMuted;
   }
 };

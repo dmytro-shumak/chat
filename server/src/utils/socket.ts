@@ -5,7 +5,7 @@ import { colorGenerator } from "./colorGenerator";
 import { handleSocketAdminConnection } from "./socketAdmin";
 
 export const handleSocketConnection = async (socket: Socket, io: Server) => {
-  const user = addOnlineUser((socket as any).user);
+  const user = await addOnlineUser((socket as any).user);
   const color = colorGenerator();
 
   // socket.emit("message", { user: "admin", text: `${user.username}, welcome to the chat.` });
@@ -24,12 +24,9 @@ export const handleSocketConnection = async (socket: Socket, io: Server) => {
   }
 
   socket.on("sendMessage", async (message: string, callback: (error?: string) => void) => {
-    if (user.muted) {
+    if (user.isMuted) {
       // return callback("You are muted and cannot send messages.");
-      io.emit("message", {
-        user: "admin",
-        text: `${user.username} is muted and cannot send messages.`,
-      });
+      return;
     }
 
     const newMessage = await saveMessage({ username: user.username, text: message, color });
@@ -40,7 +37,7 @@ export const handleSocketConnection = async (socket: Socket, io: Server) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    removeOnlineUser((socket as any).user._id);
+    removeOnlineUser(user._id);
     // io.emit("message", { user: "admin", text: `${user.username} has left.` });
     io.emit("activeUserList", getOnlineUsers());
   });
