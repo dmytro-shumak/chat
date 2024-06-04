@@ -1,12 +1,12 @@
 import Message, { IMessage } from "../model/Message";
 
 interface SaveMessageInput {
-  user: string;
+  username: string;
   text: string;
 }
 
-export const saveMessage = async ({ user, text }: SaveMessageInput): Promise<IMessage> => {
-  const message = new Message({ user, text });
+export const saveMessage = async ({ username, text }: SaveMessageInput): Promise<IMessage> => {
+  const message = new Message({ username, text });
   await message.save();
   return message;
 };

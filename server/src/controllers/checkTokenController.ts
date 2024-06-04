@@ -6,7 +6,6 @@ export const checkTokenController = (req: Request, res: Response) => {
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  console.log("token", token);
   const payload = jwt.verify(token, process.env.JWT_SECRET as string);
 
   if (payload) {

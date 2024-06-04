@@ -2,13 +2,14 @@ import { Server, Socket } from "socket.io";
 import { getLastMessages, saveMessage } from "../services/chatService";
 import { addUser, getUsers, removeUser } from "../services/userService";
 
-export const handleSocketConnection = (socket: Socket, io: Server) => {
+export const handleSocketConnection = async (socket: Socket, io: Server) => {
   const user = addUser((socket as any).user);
 
-  socket.emit("message", { user: "admin", text: `${user.username}, welcome to the chat.` });
-  socket.broadcast.emit("message", { user: "admin", text: `${user.username} has joined!` });
+  // socket.emit("message", { user: "admin", text: `${user.username}, welcome to the chat.` });
+  // socket.broadcast.emit("message", { user: "admin", text: `${user.username} has joined!` });
 
-  socket.emit("loadMessages", getLastMessages());
+  const lastMessages = await getLastMessages();
+  socket.emit("loadMessages", lastMessages);
 
   io.emit("userList", getUsers());
 
@@ -22,7 +23,7 @@ export const handleSocketConnection = (socket: Socket, io: Server) => {
       });
     }
 
-    const newMessage = await saveMessage({ user: user.username, text: message });
+    const newMessage = await saveMessage({ username: user.username, text: message });
 
     io.emit("message", newMessage);
     // callback();

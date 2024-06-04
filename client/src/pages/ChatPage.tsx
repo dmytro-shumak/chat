@@ -1,13 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext/AuthContext";
+import { useSocket } from "../hook/useSocket";
 
 interface Message {
   username: string;
   text: string;
   avatar: string;
 }
-
 const ChatPage: React.FC = () => {
+  const socket = useSocket("http://localhost:3000");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
 
@@ -17,16 +18,22 @@ const ChatPage: React.FC = () => {
     setInputValue(e.target.value);
   };
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("loadMessages", (messages: Message[]) => {
+        setMessages(messages);
+      });
+      socket.on("message", (message: Message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      });
+    }
+  }, [socket]);
+
   if (!user) return null;
 
   const handleSendMessage = () => {
     if (inputValue.trim() !== "") {
-      const newMessage: Message = {
-        username: user?.username,
-        text: inputValue,
-        avatar: "path/to/avatar.png",
-      };
-      setMessages([...messages, newMessage]);
+      socket?.emit("sendMessage", inputValue);
       setInputValue("");
     }
   };

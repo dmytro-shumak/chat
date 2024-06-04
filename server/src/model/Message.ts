@@ -4,7 +4,7 @@ import { Document, Schema, model } from "mongoose";
 
 // Define the Message schema
 const messageSchema = new Schema<IMessage>({
-  user: {
+  username: {
     type: String,
     required: true,
   },
@@ -20,7 +20,7 @@ const messageSchema = new Schema<IMessage>({
 });
 
 export interface IMessage extends Document {
-  user: string;
+  username: string;
   text: string;
   timestamp: Date;
 }
