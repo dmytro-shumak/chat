@@ -24,10 +24,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-mongoose.connect(
-  "mongodb+srv://dmytroshumakwork:vksbVjCFJdlDa4YX@chat.eddhign.mongodb.net/?retryWrites=true&w=majority&appName=chat",
-  {}
-);
+mongoose.connect(process.env.MONGO_URI as string, {});
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));

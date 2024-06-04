@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext/AuthContext";
+import ChatPage from "./pages/ChatPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
@@ -23,7 +24,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/chat" element={<div>chat</div>} />
+        <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </div>
   );
