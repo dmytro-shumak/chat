@@ -1,14 +1,22 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
+import muteIcon from "../../assets/icons/mute-icon.svg";
+import unmuteIcon from "../../assets/icons/unmute-icon.svg";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { IUser, UserRole } from "../../types/user";
+import { classNames } from "../../utils/classNames";
+import BanIcon from "../icons/BanIcon";
 
 interface Props {
   user: IUser;
-  isCurrentUserAdmin: boolean;
+  shouldShowUserActions?: boolean;
 }
 
-const UserItem: FC<Props> = ({ user, isCurrentUserAdmin }) => {
+const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
+  const { user: currentUser } = useContext(AuthContext);
+  const isCurrentUserAdmin = currentUser?.role === UserRole.Admin;
+
   const isUserAdmin = user.role === UserRole.Admin;
-  console.log("user", user);
+
   return (
     <div className="flex items-center">
       <img
@@ -18,10 +26,21 @@ const UserItem: FC<Props> = ({ user, isCurrentUserAdmin }) => {
       />
       <span className="ml-2">{user.username}</span>
       {isUserAdmin && <span className="ml-2 text-sm text-gray-500">admin</span>}
-      {isCurrentUserAdmin && (
+      {isCurrentUserAdmin && shouldShowUserActions && (
         <>
-          <div className="ml-auto mr-2">mute</div>
-          <div>ban</div>
+          <div className="w-5 h-5 ml-auto mr-2 cursor-pointer">
+            {user.isMuted ? (
+              <img src={muteIcon} alt="Mute Icon" />
+            ) : (
+              <img src={unmuteIcon} alt="Unmute Icon" />
+            )}
+          </div>
+          <BanIcon
+            className={classNames(
+              "w-5 h-5 cursor-pointer",
+              user.isBanned ? "fill-red-700" : "fill-inherit"
+            )}
+          />
         </>
       )}
     </div>
