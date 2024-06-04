@@ -5,6 +5,7 @@ import { useSocket } from "../hook/useSocket";
 interface Message {
   username: string;
   text: string;
+  color: string;
   avatar: string;
 }
 const ChatPage: React.FC = () => {
@@ -50,7 +51,9 @@ const ChatPage: React.FC = () => {
               className="w-8 h-8 mr-2 rounded-full"
             />
             <div className="flex flex-col">
-              <span className="font-semibold">{message.username}: </span>
+              <span className="font-semibold" style={{ color: message.color }}>
+                {message.username}:{" "}
+              </span>
               <span>{message.text}</span>
             </div>
           </div>

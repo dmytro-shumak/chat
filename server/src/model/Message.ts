@@ -13,6 +13,10 @@ const messageSchema = new Schema<IMessage>({
     required: true,
     maxlength: 200,
   },
+  color: {
+    type: String,
+    required: true,
+  },
   timestamp: {
     type: Date,
     default: Date.now,
@@ -22,6 +26,7 @@ const messageSchema = new Schema<IMessage>({
 export interface IMessage extends Document {
   username: string;
   text: string;
+  color: string;
   timestamp: Date;
 }
 

@@ -3,7 +3,7 @@ import { IUser } from "../model/User";
 
 export const generateToken = (user: IUser) => {
   // Generate a JWT token using the _id parameter
-  const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1h" });
+  const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "8h" });
   return token;
 };
 
