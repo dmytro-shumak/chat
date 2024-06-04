@@ -1,8 +1,9 @@
 import { IUser } from "../model/User";
 
 interface User {
-  id: string;
+  id: IUser["_id"];
   username: string;
+  role: string;
   muted: boolean;
   banned: boolean;
 }
@@ -10,9 +11,15 @@ interface User {
 const users: User[] = [];
 
 export const addUser = (userInfo: IUser): User => {
-  let user = users.find((u) => u.id === userInfo.id);
+  let user = users.find((u) => u.id === userInfo._id);
   if (!user) {
-    user = { id: userInfo.id, username: userInfo.username, muted: false, banned: false };
+    user = {
+      id: userInfo._id,
+      username: userInfo.username,
+      muted: false,
+      banned: false,
+      role: userInfo.role,
+    };
     users.push(user);
   }
   return user;

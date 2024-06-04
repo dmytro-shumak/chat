@@ -11,4 +11,5 @@
 body {
   background-color: beige;
   min-height: 100vh;
+  overflow: hidden;
 }

@@ -34,7 +34,7 @@ export const handleSocketConnection = async (socket: Socket, io: Server) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    removeUser((socket as any).user.id);
+    removeUser((socket as any).user._id);
     // io.emit("message", { user: "admin", text: `${user.username} has left.` });
     io.emit("userList", getUsers());
   });
