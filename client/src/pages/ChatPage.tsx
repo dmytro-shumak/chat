@@ -10,6 +10,7 @@ const ChatPage: React.FC = () => {
   const socket = useSocket("http://localhost:3000");
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
+  const [offlineUsers, setOfflineUsers] = useState<IUser[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   const { user } = useContext(AuthContext);
@@ -27,8 +28,11 @@ const ChatPage: React.FC = () => {
     socket.on("message", (message: Message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-    socket.on("userList", (users: IUser[]) => {
+    socket.on("activeUserList", (users: IUser[]) => {
       setOnlineUsers(users);
+    });
+    socket.on("offlineUserList", (users: IUser[]) => {
+      setOfflineUsers(users);
     });
   }, [socket]);
 
@@ -42,9 +46,9 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-4 mb-24">
-      <h1 className="text-2xl font-bold mb-4">Chat</h1>
-      <div className="flex gap-x-10">
+    <div className="mb-24 p-8 h-full">
+      <h1 className="text-2xl font-bold mb-4 text-center">Chat</h1>
+      <div className="flex gap-x-10 h-full">
         <div>
           <div className="max-w-[800px] min-h-72 h-[calc(100vh_-250px)] bg-gray-200 rounded-lg p-4 overflow-auto shadow-md basis-2/3">
             {messages.map((message, index) => (
@@ -64,7 +68,7 @@ const ChatPage: React.FC = () => {
             Send
           </button>
         </div>
-        <UserPanel onlineUsers={onlineUsers} />
+        <UserPanel onlineUsers={onlineUsers} offlineUsers={offlineUsers} />
       </div>
     </div>
   );

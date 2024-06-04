@@ -1,10 +1,11 @@
 import { Server, Socket } from "socket.io";
 import { getLastMessages, saveMessage } from "../services/chatService";
-import { addUser, getUsers, removeUser } from "../services/userService";
+import { addOnlineUser, getOnlineUsers, removeOnlineUser } from "../services/userService";
 import { colorGenerator } from "./colorGenerator";
+import { handleSocketAdminConnection } from "./socketAdmin";
 
 export const handleSocketConnection = async (socket: Socket, io: Server) => {
-  const user = addUser((socket as any).user);
+  const user = addOnlineUser((socket as any).user);
   const color = colorGenerator();
 
   // socket.emit("message", { user: "admin", text: `${user.username}, welcome to the chat.` });
@@ -14,10 +15,15 @@ export const handleSocketConnection = async (socket: Socket, io: Server) => {
   const lastMessages = await getLastMessages();
   socket.emit("loadMessages", lastMessages);
 
-  io.emit("userList", getUsers());
+  // Get active users
+  io.emit("activeUserList", getOnlineUsers());
+
+  // Get offline users if user is admin
+  if (user.role === "admin") {
+    handleSocketAdminConnection(socket, io);
+  }
 
   socket.on("sendMessage", async (message: string, callback: (error?: string) => void) => {
-    console.log("HERE?", callback);
     if (user.muted) {
       // return callback("You are muted and cannot send messages.");
       io.emit("message", {
@@ -34,8 +40,8 @@ export const handleSocketConnection = async (socket: Socket, io: Server) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    removeUser((socket as any).user._id);
+    removeOnlineUser((socket as any).user._id);
     // io.emit("message", { user: "admin", text: `${user.username} has left.` });
-    io.emit("userList", getUsers());
+    io.emit("activeUserList", getOnlineUsers());
   });
 };

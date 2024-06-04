@@ -1,4 +1,4 @@
-import { IUser } from "../model/User";
+import User, { IUser } from "../model/User";
 
 interface User {
   id: IUser["_id"];
@@ -8,10 +8,10 @@ interface User {
   banned: boolean;
 }
 
-const users: User[] = [];
+const onlineUsers: User[] = [];
 
-export const addUser = (userInfo: IUser): User => {
-  let user = users.find((u) => u.id === userInfo._id);
+export const addOnlineUser = (userInfo: IUser): User => {
+  let user = onlineUsers.find((u) => u.id === userInfo._id);
   if (!user) {
     user = {
       id: userInfo._id,
@@ -20,16 +20,31 @@ export const addUser = (userInfo: IUser): User => {
       banned: false,
       role: userInfo.role,
     };
-    users.push(user);
+    onlineUsers.push(user);
   }
   return user;
 };
 
-export const removeUser = (id: string): User | undefined => {
-  const index = users.findIndex((user) => user.id === id);
-  if (index !== -1) return users.splice(index, 1)[0];
+export const removeOnlineUser = (id: string): User | undefined => {
+  const index = onlineUsers.findIndex((user) => user.id === id);
+  if (index !== -1) return onlineUsers.splice(index, 1)[0];
 };
 
-export const getUser = (id: string): User | undefined => users.find((user) => user.id === id);
+export const getOnlineUser = (id: string): User | undefined =>
+  onlineUsers.find((user) => user.id === id);
 
-export const getUsers = (): User[] => users;
+export const getOnlineUsers = (): User[] => onlineUsers;
+
+export const getOfflineUsers = async () => {
+  const test = await User.find({ _id: { $nin: onlineUsers.map((user) => user.id) } });
+  console.log("test", test);
+  return test;
+};
+
+export const muteUser = async (id: string) => {
+  await User.findByIdAndUpdate(id, { muted: true });
+  const user = getOnlineUser(id);
+  if (user) {
+    user.muted = true;
+  }
+};

@@ -10,6 +10,9 @@
 
 body {
   background-color: beige;
-  min-height: 100vh;
+}
+
+#root {
+  height: 100vh;
   overflow: hidden;
 }

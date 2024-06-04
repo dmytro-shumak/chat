@@ -21,7 +21,7 @@ function App() {
   }, [checkToken, navigate]);
 
   return (
-    <div>
+    <div className="h-full">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/chat" element={<ChatPage />} />
