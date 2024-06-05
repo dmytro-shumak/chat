@@ -29,7 +29,7 @@ export const verifyTokenSocket = async (
       throw new Error("The user has been banned");
     }
 
-    callback(null, payload);
+    callback(null, user.toJSON());
   } catch (err) {
     callback(err);
   }

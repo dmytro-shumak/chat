@@ -1,22 +1,23 @@
 import { getLastMessages, saveMessage } from "../services/chatService";
-import { addOnlineUser, getOnlineUsers, removeOnlineUser } from "../services/userService";
+import { getOfflineUsers, getOnlineUsers } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 import { colorGenerator } from "./colorGenerator";
 import { handleSocketAdminConnection } from "./socketAdmin";
 
 export const handleSocketConnection = async (socket: UserSocket, io: UserServer) => {
-  const user = await addOnlineUser(socket.data.user);
+  const user = socket.data.user;
   const color = colorGenerator();
-
-  // socket.emit("message", { user: "admin", text: `${user.username}, welcome to the chat.` });
-  // socket.broadcast.emit("message", { user: "admin", text: `${user.username} has joined!` });
 
   // Load last 20 messages
   const lastMessages = await getLastMessages();
   socket.emit("loadMessages", lastMessages);
 
   // Get active users
-  io.emit("activeUserList", getOnlineUsers());
+  io.emit("activeUserList", getOnlineUsers(io));
+
+  // Get offline users
+  const offlineUsers = await getOfflineUsers(io);
+  io.emit("offlineUserList", offlineUsers);
 
   // Get offline users if user is admin
   if (user.role === "admin") {
@@ -35,10 +36,14 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
     // callback();
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("user disconnected");
-    removeOnlineUser(user._id);
-    // io.emit("message", { user: "admin", text: `${user.username} has left.` });
-    io.emit("activeUserList", getOnlineUsers());
+
+    // Get active users
+    io.emit("activeUserList", getOnlineUsers(io));
+
+    // Get offline users
+    const offlineUsers = await getOfflineUsers(io);
+    io.emit("offlineUserList", offlineUsers);
   });
 };

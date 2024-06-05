@@ -27,7 +27,6 @@ const ChatPage: React.FC = () => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
     on("activeUserList", (users: IUser[]) => {
-      console.log("users", users);
       setOnlineUsers(users);
     });
     on("offlineUserList", (users: IUser[]) => {

@@ -2,29 +2,29 @@ import { banUser, getOfflineUsers, getOnlineUsers, muteUser } from "../services/
 import { UserServer, UserSocket } from "../types/socket";
 
 export const handleSocketAdminConnection = async (socket: UserSocket, io: UserServer) => {
-  const offlineUsers = await getOfflineUsers();
+  const offlineUsers = await getOfflineUsers(io);
   socket.emit("offlineUserList", offlineUsers);
 
   socket.on("muteUser", async (id: string) => {
-    await muteUser(id);
+    await muteUser(id, io);
 
-    io.emit("activeUserList", getOnlineUsers());
+    io.emit("activeUserList", getOnlineUsers(io));
 
-    const offlineUsers = await getOfflineUsers();
+    const offlineUsers = await getOfflineUsers(io);
     socket.emit("offlineUserList", offlineUsers);
   });
 
   socket.on("banUser", async (id: string) => {
-    await banUser(id);
+    await banUser(id, io);
     io.sockets.sockets.forEach((value) => {
-      if (value.data.user._id === id) {
+      if (String(value.data.user._id) === id) {
         value.disconnect(true);
       }
     });
 
-    io.emit("activeUserList", getOnlineUsers());
+    io.emit("activeUserList", getOnlineUsers(io));
 
-    const offlineUsers = await getOfflineUsers();
+    const offlineUsers = await getOfflineUsers(io);
     socket.emit("offlineUserList", offlineUsers);
   });
 };
