@@ -1,8 +1,8 @@
 import { getLastMessages, saveMessage } from "../services/chatService";
 import { getOfflineUsers, getOnlineUsers } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
-import { colorGenerator } from "./colorGenerator";
-import { handleSocketAdminConnection } from "./socketAdmin";
+import { colorGenerator } from "../utils/colorGenerator";
+import { handleSocketAdminConnection } from "./socketAdminController";
 
 export const handleSocketConnection = async (socket: UserSocket, io: UserServer) => {
   const user = socket.data.user;
@@ -11,7 +11,6 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   // Disconnect older connections with the same user
   io.sockets.sockets.forEach((value) => {
     if (String(value.data.user._id) === String(user._id) && value.id !== socket.id) {
-      console.log("HERE", user._id);
       value.disconnect(true);
     }
   });
@@ -20,12 +19,17 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   const lastMessages = await getLastMessages();
   socket.emit("loadMessages", lastMessages);
 
-  // Get active users
-  io.emit("activeUserList", getOnlineUsers(io));
+  // io.emit("activeUserList", getOnlineUsers(io));
 
   // Get offline users
-  const offlineUsers = await getOfflineUsers(io);
-  io.emit("offlineUserList", offlineUsers);
+  // io.emit("offlineUserList", offlineUsers);
+
+  // Get users
+  // const offlineUsers = await getOfflineUsers(io);
+  io.emit("userList", {
+    onlineUsers: getOnlineUsers(io),
+    offlineUsers: await getOfflineUsers(io),
+  });
 
   // Get offline users if user is admin
   if (user.role === "admin") {
@@ -59,11 +63,9 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   socket.on("disconnect", async () => {
     console.log("user disconnected");
 
-    // Get active users
-    io.emit("activeUserList", getOnlineUsers(io));
-
-    // Get offline users
-    const offlineUsers = await getOfflineUsers(io);
-    io.emit("offlineUserList", offlineUsers);
+    io.emit("userList", {
+      onlineUsers: getOnlineUsers(io),
+      offlineUsers: await getOfflineUsers(io),
+    });
   });
 };

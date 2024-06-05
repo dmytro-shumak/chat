@@ -5,13 +5,10 @@ import UserPanel from "../components/user/UserPanel";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import { useSocket } from "../hook/useSocket";
 import { Message } from "../types/message";
-import { IUser } from "../types/user";
 
 const ChatPage: React.FC = () => {
   const { on, emit } = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
-  const [offlineUsers, setOfflineUsers] = useState<IUser[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   const { user } = useContext(AuthContext);
@@ -26,12 +23,6 @@ const ChatPage: React.FC = () => {
     });
     on("message", (message: Message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
-    });
-    on("activeUserList", (users: IUser[]) => {
-      setOnlineUsers(users);
-    });
-    on("offlineUserList", (users: IUser[]) => {
-      setOfflineUsers(users);
     });
   }, [on]);
 
@@ -76,7 +67,7 @@ const ChatPage: React.FC = () => {
             Send
           </button>
         </div>
-        <UserPanel onlineUsers={onlineUsers} offlineUsers={offlineUsers} />
+        <UserPanel />
       </div>
     </div>
   );

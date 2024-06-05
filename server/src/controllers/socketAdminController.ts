@@ -8,10 +8,10 @@ export const handleSocketAdminConnection = async (socket: UserSocket, io: UserSe
   socket.on("muteUser", async (id: string) => {
     await muteUser(id, io);
 
-    io.emit("activeUserList", getOnlineUsers(io));
-
-    const offlineUsers = await getOfflineUsers(io);
-    socket.emit("offlineUserList", offlineUsers);
+    io.emit("userList", {
+      onlineUsers: getOnlineUsers(io),
+      offlineUsers: await getOfflineUsers(io),
+    });
   });
 
   socket.on("banUser", async (id: string) => {
@@ -22,9 +22,9 @@ export const handleSocketAdminConnection = async (socket: UserSocket, io: UserSe
       }
     });
 
-    io.emit("activeUserList", getOnlineUsers(io));
-
-    const offlineUsers = await getOfflineUsers(io);
-    socket.emit("offlineUserList", offlineUsers);
+    io.emit("userList", {
+      onlineUsers: getOnlineUsers(io),
+      offlineUsers: await getOfflineUsers(io),
+    });
   });
 };
