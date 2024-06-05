@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import MessageItem from "../components/message/MessageItem";
 import UserPanel from "../components/user/UserPanel";
 import { AuthContext } from "../context/AuthContext/AuthContext";
@@ -44,7 +45,7 @@ const ChatPage: React.FC = () => {
         if (!error) {
           setInputValue("");
         } else {
-          /* empty */
+          toast.error(error);
         }
       });
     }
@@ -69,7 +70,8 @@ const ChatPage: React.FC = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded block"
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded block disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={user.isMuted || inputValue.trim() === ""}
           >
             Send
           </button>

@@ -1,4 +1,5 @@
 import { FC, PropsWithChildren, createContext, useCallback, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { post } from "../../api/axios";
 import { IUser } from "../../types/user";
@@ -41,7 +42,13 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else if (typeof err === "string") {
+        toast.error(err);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 

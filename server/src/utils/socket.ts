@@ -32,23 +32,27 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
     handleSocketAdminConnection(socket, io);
   }
 
-  socket.on("sendMessage", async (message: string, callback: (error?: string) => void) => {
-    console.log("callback", callback);
+  socket.on("sendMessage", async (message: string, callback?: (error?: string) => void) => {
     if (user.isMuted) {
-      return callback("You are muted and cannot send messages.");
+      return callback?.("You are muted and cannot send messages.");
     }
 
     if (message.length > 200) {
-      return callback("Message is too long");
+      return callback?.("Message is too long");
     }
 
     try {
-      const newMessage = await saveMessage({ username: user.username, text: message, color });
+      const normalizedMessage = message.replace(/\s{2,}/g, " ");
+      const newMessage = await saveMessage({
+        username: user.username,
+        text: normalizedMessage,
+        color,
+      });
       io.emit("message", newMessage);
 
-      callback();
+      callback?.();
     } catch (error) {
-      callback("An error occurred while sending the message.");
+      callback?.("An error occurred while sending the message.");
     }
   });
 

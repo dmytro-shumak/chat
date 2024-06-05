@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext/AuthContext";
 import ChatPage from "./pages/ChatPage";
@@ -26,6 +27,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/chat" element={<ChatPage />} />
       </Routes>
+      <Toaster />
     </div>
   );
 }
