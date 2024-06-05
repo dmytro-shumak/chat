@@ -11,6 +11,10 @@ export const authController = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Username must be at least 3 characters long." });
   }
 
+  if (/[!@#$%^&*(),.?":{}|<>]/.test(username)) {
+    return res.status(400).json({ error: "Username can only contain letters and numbers." });
+  }
+
   try {
     // Check if the user exists in MongoDB
     let user = await User.findOne({ username });

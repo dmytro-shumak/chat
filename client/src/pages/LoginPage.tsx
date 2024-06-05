@@ -28,6 +28,11 @@ const LoginPage: FC = () => {
       return;
     }
 
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(username)) {
+      setError("Username can only contain letters and numbers");
+      return;
+    }
+
     setError("");
 
     loginAction(username, password);

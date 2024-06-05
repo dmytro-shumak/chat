@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, createContext, useCallback, useState } from "react";
+import { FC, PropsWithChildren, createContext, useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { post } from "../../api/axios";
 import { IUser } from "../../types/user";
@@ -8,6 +8,7 @@ interface AuthContextProps {
   user: IUser | null;
   loginAction: (username: string, password: string) => Promise<LoginResponse | undefined>;
   checkToken: () => Promise<LoginResponse | undefined>;
+  resetToken: () => void;
 }
 
 export interface LoginResponse {
@@ -21,7 +22,9 @@ export const AuthContext = createContext<AuthContextProps>(null!);
 const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token") || "");
   const [user, setUser] = useState<IUser | null>(null);
+
   const navigate = useNavigate();
+  const isUserDisconnected = useRef(false);
 
   const loginAction = async (username: string, password: string) => {
     try {
@@ -43,6 +46,10 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   };
 
   const checkToken = useCallback(async () => {
+    if (!token || isUserDisconnected.current) {
+      return;
+    }
+
     try {
       const data = await post<LoginResponse>("/auth/check-token", null, {
         headers: {
@@ -60,8 +67,13 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [navigate, token]);
 
+  const resetToken = useCallback(() => {
+    setToken(null);
+    isUserDisconnected.current = true;
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ token, user, loginAction, checkToken }}>
+    <AuthContext.Provider value={{ token, user, loginAction, checkToken, resetToken }}>
       {children}
     </AuthContext.Provider>
   );

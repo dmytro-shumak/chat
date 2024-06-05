@@ -8,6 +8,14 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   const user = socket.data.user;
   const color = colorGenerator();
 
+  // Disconnect older connections with the same user
+  io.sockets.sockets.forEach((value) => {
+    if (String(value.data.user._id) === String(user._id) && value.id !== socket.id) {
+      console.log("HERE", user._id);
+      value.disconnect(true);
+    }
+  });
+
   // Load last 20 messages
   const lastMessages = await getLastMessages();
   socket.emit("loadMessages", lastMessages);

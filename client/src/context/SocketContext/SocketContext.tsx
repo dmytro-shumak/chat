@@ -21,7 +21,7 @@ interface SocketProviderProps {
 export const SocketProvider: FC<SocketProviderProps> = ({ url, children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
-  const { token } = useContext(AuthContext);
+  const { token, resetToken } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +37,7 @@ export const SocketProvider: FC<SocketProviderProps> = ({ url, children }) => {
     });
 
     socketInstance.on("disconnect", () => {
+      resetToken();
       navigate("/login");
       setConnected(false);
     });
@@ -44,7 +45,7 @@ export const SocketProvider: FC<SocketProviderProps> = ({ url, children }) => {
     return () => {
       socketInstance.disconnect();
     };
-  }, [url]);
+  }, [navigate, resetToken, token, url]);
 
   const emit = useCallback(
     (event: string, data?: unknown) => {
