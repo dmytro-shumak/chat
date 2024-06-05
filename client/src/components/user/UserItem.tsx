@@ -23,6 +23,10 @@ const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
     emit("muteUser", user._id);
   };
 
+  const handleBanUser = () => {
+    emit("banUser", user._id);
+  };
+
   return (
     <div className="flex items-center">
       <img
@@ -46,6 +50,7 @@ const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
               "w-5 h-5 cursor-pointer",
               user.isBanned ? "fill-red-700" : "fill-inherit"
             )}
+            onClick={handleBanUser}
           />
         </>
       )}

@@ -46,3 +46,14 @@ export const muteUser = async (id: string) => {
     onlineUser.isMuted = !onlineUser.isMuted;
   }
 };
+
+export const banUser = async (id: string) => {
+  const user = await User.findById(id);
+  if (!user) throw new Error("User not found");
+
+  const updated = await User.findByIdAndUpdate(id, { isBanned: !user.isBanned }, { new: true });
+  const onlineUser = getOnlineUser(id);
+  if (onlineUser) {
+    onlineUser.isBanned = !onlineUser.isBanned;
+  }
+};

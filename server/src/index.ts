@@ -35,8 +35,11 @@ db.once("open", () => {
 io.use((socket, next) => {
   const token = socket.handshake.query.token as string;
   verifyTokenSocket(token, (err, decoded) => {
-    if (err) return next(new Error("Authentication error"));
-    (socket as any).user = decoded;
+    if (err) {
+      return next(err);
+    }
+
+    socket.data.user = decoded;
     next();
   });
 });

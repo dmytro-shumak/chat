@@ -1,11 +1,11 @@
-import { Server, Socket } from "socket.io";
 import { getLastMessages, saveMessage } from "../services/chatService";
 import { addOnlineUser, getOnlineUsers, removeOnlineUser } from "../services/userService";
+import { UserServer, UserSocket } from "../types/socket";
 import { colorGenerator } from "./colorGenerator";
 import { handleSocketAdminConnection } from "./socketAdmin";
 
-export const handleSocketConnection = async (socket: Socket, io: Server) => {
-  const user = await addOnlineUser((socket as any).user);
+export const handleSocketConnection = async (socket: UserSocket, io: UserServer) => {
+  const user = await addOnlineUser(socket.data.user);
   const color = colorGenerator();
 
   // socket.emit("message", { user: "admin", text: `${user.username}, welcome to the chat.` });
