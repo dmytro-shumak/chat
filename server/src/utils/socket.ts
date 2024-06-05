@@ -33,15 +33,23 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   }
 
   socket.on("sendMessage", async (message: string, callback: (error?: string) => void) => {
+    console.log("callback", callback);
     if (user.isMuted) {
-      // return callback("You are muted and cannot send messages.");
-      return;
+      return callback("You are muted and cannot send messages.");
     }
 
-    const newMessage = await saveMessage({ username: user.username, text: message, color });
+    if (message.length > 200) {
+      return callback("Message is too long");
+    }
 
-    io.emit("message", newMessage);
-    // callback();
+    try {
+      const newMessage = await saveMessage({ username: user.username, text: message, color });
+      io.emit("message", newMessage);
+
+      callback();
+    } catch (error) {
+      callback("An error occurred while sending the message.");
+    }
   });
 
   socket.on("disconnect", async () => {

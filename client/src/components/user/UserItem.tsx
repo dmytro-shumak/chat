@@ -9,10 +9,9 @@ import BanIcon from "../icons/BanIcon";
 
 interface Props {
   user: IUser;
-  shouldShowUserActions?: boolean;
 }
 
-const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
+const UserItem: FC<Props> = ({ user }) => {
   const { emit } = useSocket();
   const { user: currentUser } = useContext(AuthContext);
   const isCurrentUserAdmin = currentUser?.role === UserRole.Admin;
@@ -36,7 +35,7 @@ const UserItem: FC<Props> = ({ user, shouldShowUserActions = true }) => {
       />
       <span className="ml-2">{user.username}</span>
       {isUserAdmin && <span className="ml-2 text-sm text-gray-500">admin</span>}
-      {isCurrentUserAdmin && shouldShowUserActions && (
+      {isCurrentUserAdmin && !isUserAdmin && (
         <>
           <div className="w-5 h-5 ml-auto mr-2 cursor-pointer" onClick={handleMuteUser}>
             {user.isMuted ? (

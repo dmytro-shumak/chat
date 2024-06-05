@@ -13,6 +13,7 @@ export const saveMessage = async ({
 }: SaveMessageInput): Promise<IMessage> => {
   const message = new Message({ username, text, color });
   await message.save();
+
   return message;
 };
 

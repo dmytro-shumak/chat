@@ -34,12 +34,19 @@ const ChatPage: React.FC = () => {
     });
   }, [on]);
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   const handleSendMessage = () => {
     if (inputValue.trim() !== "") {
-      emit("sendMessage", inputValue);
-      setInputValue("");
+      emit("sendMessage", inputValue, (error?: string) => {
+        if (!error) {
+          setInputValue("");
+        } else {
+          /* empty */
+        }
+      });
     }
   };
 

@@ -6,7 +6,7 @@ import { AuthContext } from "../AuthContext/AuthContext";
 export interface SocketContextProps {
   socket: Socket | null;
   connected: boolean;
-  emit: (event: string, data?: unknown) => void;
+  emit: (event: string, ...args: any[]) => void;
   on: (event: string, callback: (...args: any[]) => void) => void;
   off: (event: string, callback: (...args: any[]) => void) => void;
 }
@@ -48,9 +48,9 @@ export const SocketProvider: FC<SocketProviderProps> = ({ url, children }) => {
   }, [navigate, resetToken, token, url]);
 
   const emit = useCallback(
-    (event: string, data?: unknown) => {
+    (event: string, ...data: any[]) => {
       if (socket) {
-        socket.emit(event, data);
+        socket.emit(event, ...data);
       }
     },
     [socket]

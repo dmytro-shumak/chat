@@ -19,7 +19,7 @@ const UserPanel: FC<Props> = ({ onlineUsers, offlineUsers }) => {
     <aside className="bg-gray-200 rounded-lg p-4 overflow-auto max-h-full w-full basis-1/3 h-[calc(100%_-50px)]">
       <div>
         <div className="flex items-center">
-          <UserItem user={currentUser} shouldShowUserActions={false} />
+          <UserItem user={currentUser} />
         </div>
         <input
           type="text"
