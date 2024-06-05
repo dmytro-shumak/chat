@@ -1,4 +1,5 @@
 import { FC, useContext } from "react";
+import logoutIcon from "../../assets/icons/logout-icon.svg";
 import muteIcon from "../../assets/icons/mute-icon.svg";
 import unmuteIcon from "../../assets/icons/unmute-icon.svg";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -9,11 +10,12 @@ import BanIcon from "../icons/BanIcon";
 
 interface Props {
   user: IUser;
+  showLogoutIcon?: boolean;
 }
 
-const UserItem: FC<Props> = ({ user }) => {
+const UserItem: FC<Props> = ({ user, showLogoutIcon }) => {
   const { emit } = useSocket();
-  const { user: currentUser } = useContext(AuthContext);
+  const { user: currentUser, resetToken } = useContext(AuthContext);
   const isCurrentUserAdmin = currentUser?.role === UserRole.Admin;
 
   const isUserAdmin = user.role === UserRole.Admin;
@@ -26,8 +28,12 @@ const UserItem: FC<Props> = ({ user }) => {
     emit("banUser", user._id);
   };
 
+  const handleLogout = () => {
+    resetToken(true);
+  };
+
   return (
-    <div className="flex items-center">
+    <div className="flex items-center w-full">
       <img
         src="https://gravatar.com/avatar/e30c2abedbceb2d4179e29273ef50eb3?size=256&cache=1717484638117"
         alt="User Avatar"
@@ -52,6 +58,11 @@ const UserItem: FC<Props> = ({ user }) => {
             onClick={handleBanUser}
           />
         </>
+      )}
+      {showLogoutIcon && (
+        <div className="w-5 h-5 ml-auto mr-2 cursor-pointer" onClick={handleLogout}>
+          <img src={logoutIcon} alt="Mute Icon" />
+        </div>
       )}
     </div>
   );

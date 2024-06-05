@@ -9,7 +9,7 @@ interface AuthContextProps {
   user: IUser | null;
   loginAction: (username: string, password: string) => Promise<LoginResponse | undefined>;
   checkToken: () => Promise<LoginResponse | undefined>;
-  resetToken: () => void;
+  resetToken: (removeTokenFromLocalStorage?: boolean) => void;
 }
 
 export interface LoginResponse {
@@ -74,9 +74,13 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [navigate, token]);
 
-  const resetToken = useCallback(() => {
+  const resetToken = useCallback((removeTokenFromLocalStorage?: boolean) => {
     setToken(null);
     isUserDisconnected.current = true;
+
+    if (removeTokenFromLocalStorage) {
+      localStorage.removeItem("token");
+    }
   }, []);
 
   return (
