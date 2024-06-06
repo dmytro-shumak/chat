@@ -17,6 +17,9 @@ export default {
       slideIn: "slideIn 0.5s ease-out forwards",
       slideOut: "slideOut 0.5s ease-out forwards",
     },
+    boxShadow: {
+      primary: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+    },
   },
   plugins: [],
 };

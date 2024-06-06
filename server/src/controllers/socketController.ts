@@ -1,4 +1,4 @@
-import { getLastMessages, saveMessage } from "../services/chatService";
+import { getLastMessageFromUser, getLastMessages, saveMessage } from "../services/chatService";
 import { getOfflineUsers, getOnlineUsers } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 import { colorGenerator } from "../utils/colorGenerator";
@@ -15,9 +15,13 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
     }
   });
 
-  // Load last 20 messages
+  // Load last 20 messages and last message from user
   const lastMessages = await getLastMessages();
-  socket.emit("loadMessages", lastMessages);
+  const lastUserMessage = await getLastMessageFromUser(user.username);
+  socket.emit("loadMessages", {
+    messages: lastMessages,
+    lastUserMessageTime: lastUserMessage?.timestamp,
+  });
 
   io.emit("userList", {
     onlineUsers: getOnlineUsers(io),
@@ -36,6 +40,14 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
 
     if (message.length > 200) {
       return callback?.("Message is too long");
+    }
+
+    const lastMessage = await getLastMessageFromUser(user.username);
+    if (lastMessage) {
+      const timeDifference = Date.now() - lastMessage.timestamp.getTime();
+      if (timeDifference < 15_000) {
+        return callback?.("Please wait 15 seconds before sending another message.");
+      }
     }
 
     try {
