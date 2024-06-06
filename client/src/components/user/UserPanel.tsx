@@ -11,13 +11,9 @@ interface Props {
   hasInteractedWithBurger: boolean;
 }
 
-interface Users {
-  onlineUsers: IUser[];
-  offlineUsers: IUser[];
-}
-
 const UserPanel: FC<Props> = ({ isChatVisible, hasInteractedWithBurger }) => {
-  const [users, setUsers] = useState<Users>({ offlineUsers: [], onlineUsers: [] });
+  const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
+  const [offlineUsers, setOfflineUsers] = useState<IUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { user: currentUser } = useContext(AuthContext);
@@ -25,23 +21,24 @@ const UserPanel: FC<Props> = ({ isChatVisible, hasInteractedWithBurger }) => {
 
   const filteredOnlineUsers = useMemo(
     () =>
-      users.onlineUsers.filter((user) =>
-        user.username.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    [users.onlineUsers, searchQuery]
+      onlineUsers.filter((user) => user.username.toLowerCase().includes(searchQuery.toLowerCase())),
+    [onlineUsers, searchQuery]
   );
 
   const filteredOfflineUsers = useMemo(
     () =>
-      users.offlineUsers.filter((user) =>
+      offlineUsers.filter((user) =>
         user.username.toLowerCase().includes(searchQuery.toLowerCase())
       ),
-    [users.offlineUsers, searchQuery]
+    [offlineUsers, searchQuery]
   );
 
   useEffect(() => {
-    on("userList", (users: Users) => {
-      setUsers(users);
+    on("onlineUserList", (onlineUsers: IUser[]) => {
+      setOnlineUsers(onlineUsers);
+    });
+    on("offlineUserList", (offlineUsers: IUser[]) => {
+      setOfflineUsers(offlineUsers);
     });
   }, [on]);
 

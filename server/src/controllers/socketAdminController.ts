@@ -1,4 +1,10 @@
-import { banUser, getOfflineUsers, getOnlineUsers, muteUser } from "../services/userService";
+import {
+  banUser,
+  getOfflineUsers,
+  getOnlineUsers,
+  muteUser,
+  sendOfflineUsersToAdmins,
+} from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 
 export const handleSocketAdminConnection = async (socket: UserSocket, io: UserServer) => {
@@ -8,10 +14,11 @@ export const handleSocketAdminConnection = async (socket: UserSocket, io: UserSe
   socket.on("muteUser", async (id: string) => {
     await muteUser(id, io);
 
-    io.emit("userList", {
-      onlineUsers: getOnlineUsers(io),
-      offlineUsers: await getOfflineUsers(io),
-    });
+    // Get active users
+    io.emit("onlineUserList", getOnlineUsers(io));
+
+    // Send offline users to admins
+    sendOfflineUsersToAdmins(io);
   });
 
   socket.on("banUser", async (id: string) => {
@@ -22,9 +29,10 @@ export const handleSocketAdminConnection = async (socket: UserSocket, io: UserSe
       }
     });
 
-    io.emit("userList", {
-      onlineUsers: getOnlineUsers(io),
-      offlineUsers: await getOfflineUsers(io),
-    });
+    // Get active users
+    io.emit("onlineUserList", getOnlineUsers(io));
+
+    // Send offline users to admins
+    sendOfflineUsersToAdmins(io);
   });
 };

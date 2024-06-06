@@ -1,5 +1,5 @@
 import { getLastMessageFromUser, getLastMessages, saveMessage } from "../services/chatService";
-import { getOfflineUsers, getOnlineUsers } from "../services/userService";
+import { getOnlineUsers, sendOfflineUsersToAdmins } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 import { colorGenerator } from "../utils/colorGenerator";
 import { handleSocketAdminConnection } from "./socketAdminController";
@@ -23,10 +23,11 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
     lastUserMessageTime: lastUserMessage?.timestamp,
   });
 
-  io.emit("userList", {
-    onlineUsers: getOnlineUsers(io),
-    offlineUsers: await getOfflineUsers(io),
-  });
+  // Get active users
+  io.emit("onlineUserList", getOnlineUsers(io));
+
+  // Send offline users to admins
+  sendOfflineUsersToAdmins(io);
 
   // Get offline users if user is admin
   if (user.role === "admin") {
@@ -42,6 +43,7 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
       return callback?.("Message is too long");
     }
 
+    // Check if user is spamming
     const lastMessage = await getLastMessageFromUser(user.username);
     if (lastMessage) {
       const timeDifference = Date.now() - lastMessage.timestamp.getTime();
@@ -66,11 +68,10 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   });
 
   socket.on("disconnect", async () => {
-    console.log("user disconnected");
+    // Get active users
+    io.emit("onlineUserList", getOnlineUsers(io));
 
-    io.emit("userList", {
-      onlineUsers: getOnlineUsers(io),
-      offlineUsers: await getOfflineUsers(io),
-    });
+    // Send offline users to admins
+    sendOfflineUsersToAdmins(io);
   });
 };

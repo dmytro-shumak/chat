@@ -47,3 +47,12 @@ export const banUser = async (id: string, io: UserServer) => {
     onlineUser.isBanned = !onlineUser.isBanned;
   }
 };
+
+export async function sendOfflineUsersToAdmins(io: UserServer) {
+  const offlineUsers = await getOfflineUsers(io);
+  io.sockets.sockets.forEach((socket: any) => {
+    if (socket.data.user.role === "admin") {
+      socket.emit("offlineUserList", offlineUsers);
+    }
+  });
+}
