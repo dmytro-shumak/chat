@@ -1,4 +1,13 @@
-import { FC, PropsWithChildren, createContext, useCallback, useRef, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  PropsWithChildren,
+  SetStateAction,
+  createContext,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { post } from "../../api/axios";
@@ -10,6 +19,7 @@ interface AuthContextProps {
   loginAction: (username: string, password: string) => Promise<LoginResponse | undefined>;
   checkToken: () => Promise<LoginResponse | undefined>;
   resetToken: (removeTokenFromLocalStorage?: boolean) => void;
+  setUser: Dispatch<SetStateAction<IUser | null>>;
 }
 
 export interface LoginResponse {
@@ -86,7 +96,7 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token, user, loginAction, checkToken, resetToken }}>
+    <AuthContext.Provider value={{ token, user, loginAction, checkToken, resetToken, setUser }}>
       {children}
     </AuthContext.Provider>
   );

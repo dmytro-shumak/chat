@@ -24,7 +24,7 @@ const ChatWidget = () => {
     const updateRemainingTime = () => {
       const timeDifference = Date.now() - new Date(lastUserMessageTime!).getTime();
       const timeLeft = 15 - Math.floor(timeDifference / 1000);
-      if (timeLeft >= 0) {
+      if (timeLeft > 0) {
         setRemainingTimeToSendMessage(timeLeft);
       } else {
         clearInterval(intervalId);
@@ -105,7 +105,7 @@ const ChatWidget = () => {
           Send
         </button>
         {remainingTimeToSendMessage && (
-          <div className=" text-red-600 font-bold text-lg p-1">{remainingTimeToSendMessage}</div>
+          <div className="text-red-600 font-bold text-lg p-1">{remainingTimeToSendMessage}</div>
         )}
       </div>
     </div>

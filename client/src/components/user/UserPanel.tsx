@@ -55,10 +55,10 @@ const UserPanel: FC<Props> = ({ isChatVisible, hasInteractedWithBurger }) => {
   return (
     <aside
       className={classNames(
-        "bg-slate-300 rounded-lg fixed lg:static p-4 overflow-auto max-w-[500px] lg:max-h-full w-full basis-1/3 h-[calc(100%_-50px)] shadow-primary translate-x-full lg:translate-x-0 right-0",
+        "bg-slate-300 rounded-lg fixed lg:static p-4 overflow-auto max-w-[500px] lg:max-h-full w-full basis-1/3 h-[calc(100%_-50px)] shadow-primary translate-x-full lg:translate-x-0 right-0 lg:animate-none",
         isChatVisible && "animate-slideIn",
         // Don't show animation until user interacts with hamburger
-        !isChatVisible && hasInteractedWithBurger && "animate-slideOut lg:animate-none"
+        !isChatVisible && hasInteractedWithBurger && "animate-slideOut"
       )}
     >
       <div>

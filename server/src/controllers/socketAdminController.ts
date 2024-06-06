@@ -1,38 +1,37 @@
-import {
-  banUser,
-  getOfflineUsers,
-  getOnlineUsers,
-  muteUser,
-  sendOfflineUsersToAdmins,
-} from "../services/userService";
+import { banUser, muteUser, updateUserList } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 
 export const handleSocketAdminConnection = async (socket: UserSocket, io: UserServer) => {
-  const offlineUsers = await getOfflineUsers(io);
-  socket.emit("offlineUserList", offlineUsers);
-
   socket.on("muteUser", async (id: string) => {
-    await muteUser(id, io);
+    // Mute user
+    const updatedUser = await muteUser(id, io);
 
-    // Get active users
-    io.emit("onlineUserList", getOnlineUsers(io));
+    // Emit muteUserToggle event to the user
+    if (updatedUser) {
+      io.sockets.sockets.forEach((socket) => {
+        if (String(socket.data.user._id) === id) {
+          socket.emit("muteUserToggle", updatedUser.isMuted);
+        }
+      });
+    }
 
-    // Send offline users to admins
-    sendOfflineUsersToAdmins(io);
+    // Update user list
+    await updateUserList(io);
   });
 
   socket.on("banUser", async (id: string) => {
-    await banUser(id, io);
-    io.sockets.sockets.forEach((value) => {
-      if (String(value.data.user._id) === id) {
-        value.disconnect(true);
+    // Ban and disconnect user
+    const updatedUser = await banUser(id, io);
+    io.sockets.sockets.forEach((socket) => {
+      if (String(socket.data.user._id) === id) {
+        if (updatedUser) {
+          socket.emit("banUserToggle", updatedUser.isBanned);
+        }
+        socket.disconnect(true);
       }
     });
 
-    // Get active users
-    io.emit("onlineUserList", getOnlineUsers(io));
-
-    // Send offline users to admins
-    sendOfflineUsersToAdmins(io);
+    // Update user list
+    await updateUserList(io);
   });
 };

@@ -1,15 +1,14 @@
 import User, { IUser } from "../model/User";
 import { UserServer } from "../types/socket";
 
-export const getOnlineUser = (id: string, io: UserServer): any => {
+export const getOnlineUser = (id: string, io: UserServer) => {
   for (let [_, value] of io.sockets.sockets) {
     if (String(value.data.user._id) === id) {
       return value.data.user;
     }
   }
 };
-
-export const getOnlineUsers = (io: UserServer): IUser[] => {
+const getOnlineUsers = (io: UserServer): IUser[] => {
   const users: IUser[] = [];
   io.sockets.sockets.forEach((value) => {
     users.push(value.data.user);
@@ -17,42 +16,59 @@ export const getOnlineUsers = (io: UserServer): IUser[] => {
   return users;
 };
 
-export const getOfflineUsers = async (io: UserServer) => {
+const getOfflineUsers = async (io: UserServer) => {
   const onlineUserIds = getOnlineUsers(io).map((user) => user._id);
   const offlineUsers = await User.find({ _id: { $nin: onlineUserIds } });
 
   return offlineUsers;
 };
 
-export const muteUser = async (id: string, io: UserServer) => {
+export const muteUser = async (id: string, io: UserServer): Promise<IUser | undefined> => {
   const user = await User.findById(id);
-  if (!user) throw new Error("User not found");
+  if (!user) {
+    throw new Error("User not found");
+  }
 
-  await User.findByIdAndUpdate(id, { isMuted: !user.isMuted });
+  const updatedUser = await User.findByIdAndUpdate(id, { isMuted: !user.isMuted });
+  if (!updatedUser) {
+    throw new Error("User not found");
+  }
 
   const onlineUser = getOnlineUser(id, io);
   if (onlineUser) {
-    onlineUser.isMuted = !onlineUser.isMuted;
+    onlineUser.isMuted = !updatedUser.isMuted;
   }
+
+  return onlineUser;
 };
 
-export const banUser = async (id: string, io: UserServer) => {
+export const banUser = async (id: string, io: UserServer): Promise<IUser | undefined> => {
   const user = await User.findById(id);
   if (!user) throw new Error("User not found");
 
-  await User.findByIdAndUpdate(id, { isBanned: !user.isBanned });
+  const updatedUser = await User.findByIdAndUpdate(id, { isBanned: !user.isBanned });
+  if (!updatedUser) {
+    throw new Error("User not found");
+  }
 
   const onlineUser = getOnlineUser(id, io);
   if (onlineUser) {
-    onlineUser.isBanned = !onlineUser.isBanned;
+    onlineUser.isBanned = !updatedUser.isBanned;
   }
+
+  return onlineUser;
 };
 
-export async function sendOfflineUsersToAdmins(io: UserServer) {
+async function sendOfflineUsersToAdmins(io: UserServer) {
   const offlineUsers = await getOfflineUsers(io);
   io.sockets.sockets.forEach((socket: any) => {
     if (socket.data.user.role === "admin") {
       socket.emit("offlineUserList", offlineUsers);
     }
   });
+}
+
+export async function updateUserList(io: UserServer) {
+  io.emit("onlineUserList", getOnlineUsers(io));
+  await sendOfflineUsersToAdmins(io);
 }

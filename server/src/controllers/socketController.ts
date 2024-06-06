@@ -1,5 +1,5 @@
 import { getLastMessageFromUser, getLastMessages, saveMessage } from "../services/chatService";
-import { getOnlineUsers, sendOfflineUsersToAdmins } from "../services/userService";
+import { updateUserList } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 import { colorGenerator } from "../utils/colorGenerator";
 import { handleSocketAdminConnection } from "./socketAdminController";
@@ -23,11 +23,8 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
     lastUserMessageTime: lastUserMessage?.timestamp,
   });
 
-  // Get active users
-  io.emit("onlineUserList", getOnlineUsers(io));
-
-  // Send offline users to admins
-  sendOfflineUsersToAdmins(io);
+  // Update user list
+  updateUserList(io);
 
   // Get offline users if user is admin
   if (user.role === "admin") {
@@ -68,10 +65,7 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   });
 
   socket.on("disconnect", async () => {
-    // Get active users
-    io.emit("onlineUserList", getOnlineUsers(io));
-
-    // Send offline users to admins
-    sendOfflineUsersToAdmins(io);
+    // Update user list
+    await updateUserList(io);
   });
 };

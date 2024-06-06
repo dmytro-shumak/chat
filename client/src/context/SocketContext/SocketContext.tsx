@@ -37,8 +37,6 @@ export const SocketProvider: FC<SocketProviderProps> = ({ url, children }) => {
     });
 
     socketInstance.on("disconnect", () => {
-      resetToken();
-      navigate("/login");
       setConnected(false);
     });
 

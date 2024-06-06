@@ -1,16 +1,53 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import Burger from "../components/burger/Burger";
 import ChatWidget from "../components/chat/ChatWidget";
 import UserPanel from "../components/user/UserPanel";
+import { AuthContext } from "../context/AuthContext/AuthContext";
+import { useSocket } from "../hook/useSocket";
 
 const ChatPage: React.FC = () => {
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
+  const navigate = useNavigate();
+  const { setUser, resetToken } = useContext(AuthContext);
+  const { on, off } = useSocket();
+
   const handleChatVisibility = () => {
     setIsChatVisible((prev) => !prev);
     setHasInteracted(true);
   };
+
+  useEffect(() => {
+    const handleUpdateUser = (isMuted: boolean) => {
+      setUser((prevUserData) => {
+        if (!prevUserData) {
+          return prevUserData;
+        }
+        return {
+          ...prevUserData,
+          isMuted,
+        };
+      });
+    };
+    const handleBanUser = (isBanned: boolean) => {
+      if (isBanned) {
+        toast.error("You have been banned from the chat");
+        resetToken();
+        navigate("/login");
+      }
+    };
+
+    on("muteUserToggle", handleUpdateUser);
+    on("banUserToggle", handleBanUser);
+
+    return () => {
+      off("muteUserToggle", handleUpdateUser);
+      off("banUserToggle", handleBanUser);
+    };
+  });
 
   return (
     <div className="mb-24 p-8 h-full">

@@ -18,7 +18,7 @@ export const saveMessage = async ({
 };
 
 export const getLastMessages = async (): Promise<IMessage[]> => {
-  return await Message.find().sort({ createdAt: -1 }).limit(20);
+  return (await Message.find().sort({ timestamp: -1 }).limit(20)).reverse();
 };
 
 export const getLastMessageFromUser = async (username: string): Promise<IMessage | null> => {
