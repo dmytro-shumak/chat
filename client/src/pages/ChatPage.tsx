@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Burger from "../components/burger/Burger";
 import MessageItem from "../components/message/MessageItem";
 import UserPanel from "../components/user/UserPanel";
 import { AuthContext } from "../context/AuthContext/AuthContext";
@@ -9,6 +10,9 @@ import { Message } from "../types/message";
 const ChatPage: React.FC = () => {
   const { on, emit } = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isChatVisible, setIsChatVisible] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+
   const [inputValue, setInputValue] = useState("");
 
   const { user } = useContext(AuthContext);
@@ -42,12 +46,20 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  const handleChatVisibility = () => {
+    setIsChatVisible((prev) => !prev);
+    setHasInteracted(true);
+  };
+
   return (
     <div className="mb-24 p-8 h-full">
-      <h1 className="text-2xl font-bold mb-4 text-center">Chat</h1>
+      <header className="flex mb-4 items-center justify-between">
+        <h1 className="text-2xl font-bold text-center ml-auto lg:mr-auto">Chat</h1>
+        <Burger handleVisibility={handleChatVisibility} isVisible={isChatVisible} />
+      </header>
       <div className="flex gap-x-10 h-full">
-        <div>
-          <div className="max-w-[800px] min-h-72 h-[calc(100vh_-250px)] bg-gray-200 rounded-lg p-4 overflow-auto shadow-md basis-2/3">
+        <div className="max-w-[800px] w-full">
+          <div className="min-h-72 h-[calc(100vh_-250px)] bg-gray-200 rounded-lg p-4 overflow-auto shadow-md basis-2/3">
             {messages.map((message, index) => (
               <MessageItem key={index} message={message} />
             ))}
@@ -67,7 +79,7 @@ const ChatPage: React.FC = () => {
             Send
           </button>
         </div>
-        <UserPanel />
+        <UserPanel isChatVisible={isChatVisible} hasInteractedWithBurger={hasInteracted} />
       </div>
     </div>
   );

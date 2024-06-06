@@ -2,23 +2,26 @@ import { FC, useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { useSocket } from "../../hook/useSocket";
 import { IUser, UserRole } from "../../types/user";
+import { classNames } from "../../utils/classNames";
 import UserItem from "./UserItem";
 import UserList from "./UserList";
 
-interface Props {}
+interface Props {
+  isChatVisible: boolean;
+  hasInteractedWithBurger: boolean;
+}
 
 interface Users {
   onlineUsers: IUser[];
   offlineUsers: IUser[];
 }
 
-const UserPanel: FC<Props> = () => {
+const UserPanel: FC<Props> = ({ isChatVisible, hasInteractedWithBurger }) => {
   const [users, setUsers] = useState<Users>({ offlineUsers: [], onlineUsers: [] });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { user: currentUser } = useContext(AuthContext);
   const { on } = useSocket();
-
-  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredOnlineUsers = useMemo(
     () =>
@@ -53,7 +56,14 @@ const UserPanel: FC<Props> = () => {
   const isCurrentUserAdmin = currentUser.role === UserRole.Admin;
 
   return (
-    <aside className="bg-gray-200 rounded-lg p-4 overflow-auto max-h-full w-full basis-1/3 h-[calc(100%_-50px)]">
+    <aside
+      className={classNames(
+        "bg-slate-300 rounded-lg fixed lg:static p-4 overflow-auto max-w-[500px] lg:max-h-full w-full basis-1/3 h-[calc(100%_-50px)] shadow-sm lg:block translate-x-full lg:translate-x-0 right-0",
+        isChatVisible && "right-0 animate-slideIn",
+        // Don't show animation until user interacts with hamburger
+        !isChatVisible && hasInteractedWithBurger && "animate-slideOut lg:animate-none"
+      )}
+    >
       <div>
         <div className="flex items-center">
           <UserItem user={currentUser} showLogoutIcon />
