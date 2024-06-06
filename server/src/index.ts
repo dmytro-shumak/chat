@@ -5,11 +5,11 @@ import { createServer } from "node:http";
 
 import mongoose from "mongoose";
 import { Server } from "socket.io";
+import { handleSocketConnection } from "./controllers/socketController";
 import authMiddleware from "./middleware/authMiddleware";
 import authRoute from "./routes/authRoutes";
 import chatRoutes from "./routes/chatRoutes";
 import { verifyTokenSocket } from "./utils/jwtUtils";
-import { handleSocketConnection } from "./utils/socket";
 
 dotenv.config();
 

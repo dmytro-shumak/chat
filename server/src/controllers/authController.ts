@@ -11,6 +11,7 @@ export const authController = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Username must be at least 3 characters long." });
   }
 
+  // Check if the username contains any special characters
   if (/[!@#$%^&*(),.?":{}|<>]/.test(username)) {
     return res.status(400).json({ error: "Username can only contain letters and numbers." });
   }
@@ -21,11 +22,23 @@ export const authController = async (req: Request, res: Response) => {
     if (!user) {
       // User does not exist, create a new user
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      let role = "user";
+      const userCount = await User.countDocuments();
+      if (!userCount) {
+        role = "admin";
+      }
+
       // Generate JWT token
-      user = new User({ username, password: hashedPassword });
+      user = new User({ username, password: hashedPassword, role });
       await user.save();
+
       const token = generateToken(user.toJSON());
       return res.status(200).json({ message: "Login successful", token, user: user.toJSON() });
+    }
+
+    if (user.isBanned) {
+      return res.status(401).json({ message: "You are banned" });
     }
 
     // Perform login

@@ -19,13 +19,6 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   const lastMessages = await getLastMessages();
   socket.emit("loadMessages", lastMessages);
 
-  // io.emit("activeUserList", getOnlineUsers(io));
-
-  // Get offline users
-  // io.emit("offlineUserList", offlineUsers);
-
-  // Get users
-  // const offlineUsers = await getOfflineUsers(io);
   io.emit("userList", {
     onlineUsers: getOnlineUsers(io),
     offlineUsers: await getOfflineUsers(io),

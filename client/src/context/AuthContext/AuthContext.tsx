@@ -37,6 +37,8 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setUser(data.user);
         setToken(data.token);
         localStorage.setItem("token", data.token);
+
+        isUserDisconnected.current = false;
         navigate("/chat");
 
         return data;
