@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/auth/useAuth";
 import { useSocket } from "../../context/socket/useSocket";
@@ -13,6 +13,7 @@ const ChatWidget = () => {
   const [inputValue, setInputValue] = useState("");
 
   const { user } = useAuth();
+  const messageContainerRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
@@ -75,6 +76,10 @@ const ChatWidget = () => {
       emit("sendMessage", inputValue, (error?: string) => {
         if (!error) {
           setInputValue("");
+          messageContainerRef.current?.scrollTo({
+            top: messageContainerRef.current.scrollHeight,
+            behavior: "smooth",
+          });
         } else {
           toast.error(error);
         }
@@ -84,7 +89,10 @@ const ChatWidget = () => {
 
   return (
     <div className="max-w-[800px] w-full">
-      <div className="min-h-72 h-[calc(100vh_-250px)] bg-gray-200 rounded-lg p-4 overflow-auto shadow-primary basis-2/3">
+      <div
+        className="min-h-72 h-[calc(100vh_-250px)] bg-gray-200 rounded-lg p-4 overflow-auto shadow-primary basis-2/3"
+        ref={messageContainerRef}
+      >
         {messages.map((message, index) => (
           <MessageItem key={index} message={message} />
         ))}
@@ -99,7 +107,7 @@ const ChatWidget = () => {
       <div className="flex items-center mt-4 gap-4">
         <button
           onClick={handleSendMessage}
-          className=" px-4 py-2 bg-blue-500 text-white rounded block disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
+          className="px-4 py-2 bg-blue-500 text-white rounded block disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
           disabled={shouldDisableMessageButton}
         >
           Send

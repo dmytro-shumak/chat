@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { Message } from "../../types/message";
+import { getUserAvatar } from "../../utils/getUserAvatar";
 
 interface Props {
   message: Message;
@@ -11,8 +12,8 @@ const MessageItem: FC<Props> = ({ message }) => {
   return (
     <div className="flex items-start mb-2">
       <img
-        src="https://gravatar.com/avatar/e30c2abedbceb2d4179e29273ef50eb3?size=256&cache=1717484638117"
-        alt="Avatar"
+        src={getUserAvatar(username)}
+        alt={`${username} avatar`}
         className="w-8 h-8 mr-2 rounded-full"
       />
       <div className="flex flex-col">

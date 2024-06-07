@@ -26,7 +26,7 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   // Update user list
   updateUserList(io);
 
-  // Get offline users if user is admin
+  // Handle admin connections
   if (user.role === "admin") {
     handleSocketAdminConnection(socket, io);
   }
@@ -34,6 +34,10 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
   socket.on("sendMessage", async (message: string, callback?: (error?: string) => void) => {
     if (user.isMuted) {
       return callback?.("You are muted and cannot send messages.");
+    }
+
+    if (message.trim() === "") {
+      return callback?.("Message cannot be empty");
     }
 
     if (message.length > 200) {

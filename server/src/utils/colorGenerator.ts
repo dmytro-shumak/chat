@@ -3,7 +3,7 @@ export function colorGenerator(): string {
     "#a83258",
     "#32a875",
     "#4232a8",
-    "#c5e31e",
+    "#c5ff0a",
     "#a832a0",
     "#00308F",
     "#e3b21e",

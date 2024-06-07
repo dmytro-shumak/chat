@@ -69,6 +69,7 @@ async function sendOfflineUsersToAdmins(io: UserServer) {
 }
 
 export async function updateUserList(io: UserServer) {
-  io.emit("onlineUserList", getOnlineUsers(io));
+  const onlineUsers = getOnlineUsers(io);
   await sendOfflineUsersToAdmins(io);
+  io.emit("onlineUserList", onlineUsers);
 }
