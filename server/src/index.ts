@@ -7,9 +7,7 @@ import helmet from "helmet";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
 import { config } from "./config";
-import authMiddleware from "./middleware/authMiddleware";
 import authRoute from "./routes/authRoutes";
-import chatRoutes from "./routes/chatRoutes";
 import { handleChatSocketConnection } from "./sockets/chatSocket";
 import { verifyTokenSocket } from "./utils/jwtUtils";
 
@@ -61,7 +59,6 @@ app.use(helmet());
 app.use(limiter);
 
 app.use("/auth", authRoute);
-app.use("/chat", authMiddleware, chatRoutes);
 
 server.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
