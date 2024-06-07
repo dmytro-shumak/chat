@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { config } from "../config";
 import User from "../model/User";
 
 export const checkTokenController = async (req: Request, res: Response) => {
@@ -9,7 +10,7 @@ export const checkTokenController = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET as string);
+    const payload = jwt.verify(token, config.JWT_SECRET);
     if (typeof payload === "string" || !("_id" in payload)) {
       return res.status(200).json({ message: "Invalid token", user: payload });
     }

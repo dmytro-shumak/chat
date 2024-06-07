@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { config } from "../config";
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Check if the token is present in the request headers
@@ -12,7 +13,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Perform token verification logic here
   try {
     // Verify the token and extract the payload
-    const payload = jwt.verify(token, process.env.JWT_SECRET as string);
+    const payload = jwt.verify(token, config.JWT_SECRET);
 
     if (payload) {
       // Call the next middleware or route handler
