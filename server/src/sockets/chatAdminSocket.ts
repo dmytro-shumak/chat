@@ -1,7 +1,7 @@
 import { banUser, muteUser, updateUserList } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 
-export const handleSocketAdminConnection = async (socket: UserSocket, io: UserServer) => {
+export const handleChatAdminSocketConnection = async (socket: UserSocket, io: UserServer) => {
   socket.on("muteUser", async (id: string) => {
     // Mute user
     const updatedUser = await muteUser(id, io);

@@ -12,7 +12,7 @@ const ChatPage: React.FC = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const navigate = useNavigate();
-  const { setUser, resetToken } = useAuth();
+  const { setUser, disconnectUser } = useAuth();
   const { on, off } = useSocket();
 
   const handleChatVisibility = () => {
@@ -35,7 +35,7 @@ const ChatPage: React.FC = () => {
     const handleBanUser = (isBanned: boolean) => {
       if (isBanned) {
         toast.error("You have been banned from the chat");
-        resetToken();
+        disconnectUser();
         navigate("/login");
       }
     };

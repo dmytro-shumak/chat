@@ -7,10 +7,10 @@ import helmet from "helmet";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
 import { config } from "./config";
-import { handleSocketConnection } from "./controllers/socketController";
 import authMiddleware from "./middleware/authMiddleware";
 import authRoute from "./routes/authRoutes";
 import chatRoutes from "./routes/chatRoutes";
+import { handleChatSocketConnection } from "./sockets/chatSocket";
 import { verifyTokenSocket } from "./utils/jwtUtils";
 
 const limiter = rateLimit({
@@ -52,7 +52,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  handleSocketConnection(socket, io);
+  handleChatSocketConnection(socket, io);
 });
 
 app.use(express.json());

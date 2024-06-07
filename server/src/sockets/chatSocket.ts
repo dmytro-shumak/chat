@@ -2,9 +2,9 @@ import { getLastMessageFromUser, getLastMessages, saveMessage } from "../service
 import { updateUserList } from "../services/userService";
 import { UserServer, UserSocket } from "../types/socket";
 import { colorGenerator } from "../utils/colorGenerator";
-import { handleSocketAdminConnection } from "./socketAdminController";
+import { handleChatAdminSocketConnection } from "./chatAdminSocket";
 
-export const handleSocketConnection = async (socket: UserSocket, io: UserServer) => {
+export const handleChatSocketConnection = async (socket: UserSocket, io: UserServer) => {
   const user = socket.data.user;
   const color = colorGenerator();
 
@@ -28,7 +28,7 @@ export const handleSocketConnection = async (socket: UserSocket, io: UserServer)
 
   // Handle admin connections
   if (user.role === "admin") {
-    handleSocketAdminConnection(socket, io);
+    handleChatAdminSocketConnection(socket, io);
   }
 
   socket.on("sendMessage", async (message: string, callback?: (error?: string) => void) => {

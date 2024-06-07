@@ -12,6 +12,6 @@ export interface AuthContextProps {
   user: IUser | null;
   loginAction: (username: string, password: string) => Promise<LoginResponse | undefined>;
   checkToken: () => Promise<LoginResponse | undefined>;
-  resetToken: (removeTokenFromLocalStorage?: boolean) => void;
+  disconnectUser: (removeTokenFromLocalStorage?: boolean) => void;
   setUser: Dispatch<SetStateAction<IUser | null>>;
 }

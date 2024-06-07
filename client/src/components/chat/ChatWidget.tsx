@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/auth/useAuth";
 import { useSocket } from "../../context/socket/useSocket";
 import { LoadMessagesResponse, Message } from "../../types/message";
+import Button from "../button/Button";
 import MessageItem from "../message/MessageItem";
 
 const ChatWidget = () => {
@@ -105,13 +106,9 @@ const ChatWidget = () => {
         className="max-w-[800px] resize-none w-full min-h-20 mt-4 p-2 border border-gray-300 rounded disabled:bg-gray-200"
       />
       <div className="flex items-center mt-4 gap-4">
-        <button
-          onClick={handleSendMessage}
-          className="px-4 py-2 bg-blue-500 text-white rounded block disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70"
-          disabled={shouldDisableMessageButton}
-        >
+        <Button onClick={handleSendMessage} disabled={shouldDisableMessageButton}>
           Send
-        </button>
+        </Button>
         {remainingTimeToSendMessage && (
           <div className="text-red-600 font-bold text-lg p-1">{remainingTimeToSendMessage}</div>
         )}

@@ -14,29 +14,32 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const navigate = useNavigate();
   const isUserDisconnected = useRef(false);
 
-  const loginAction = async (username: string, password: string) => {
-    try {
-      const data = await loginUser(username, password);
-      if (data) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
+  const loginAction = useCallback(
+    async (username: string, password: string) => {
+      try {
+        const data = await loginUser(username, password);
+        if (data) {
+          setUser(data.user);
+          setToken(data.token);
+          localStorage.setItem("token", data.token);
 
-        isUserDisconnected.current = false;
-        navigate("/chat");
+          isUserDisconnected.current = false;
+          navigate("/chat");
 
-        return data;
+          return data;
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          toast.error(err.message);
+        } else if (typeof err === "string") {
+          toast.error(err);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      } else if (typeof err === "string") {
-        toast.error(err);
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
-    }
-  };
+    },
+    [navigate]
+  );
 
   const checkToken = useCallback(async () => {
     if (!token || isUserDisconnected.current) {
@@ -60,7 +63,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [navigate, token]);
 
-  const resetToken = useCallback((removeTokenFromLocalStorage?: boolean) => {
+  const disconnectUser = useCallback((removeTokenFromLocalStorage?: boolean) => {
     setToken(null);
     isUserDisconnected.current = true;
 
@@ -70,7 +73,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token, user, loginAction, checkToken, resetToken, setUser }}>
+    <AuthContext.Provider value={{ token, user, loginAction, checkToken, disconnectUser, setUser }}>
       {children}
     </AuthContext.Provider>
   );

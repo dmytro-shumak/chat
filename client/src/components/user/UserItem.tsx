@@ -16,7 +16,7 @@ interface Props {
 
 const UserItem: FC<Props> = ({ user, showLogoutIcon }) => {
   const { emit } = useSocket();
-  const { user: currentUser, resetToken } = useAuth();
+  const { user: currentUser, disconnectUser } = useAuth();
   const isCurrentUserAdmin = currentUser?.role === UserRole.Admin;
 
   const isUserAdmin = user.role === UserRole.Admin;
@@ -30,7 +30,7 @@ const UserItem: FC<Props> = ({ user, showLogoutIcon }) => {
   };
 
   const handleLogout = () => {
-    resetToken(true);
+    disconnectUser(true);
   };
 
   return (
