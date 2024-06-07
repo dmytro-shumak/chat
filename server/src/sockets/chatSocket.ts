@@ -9,9 +9,10 @@ export const handleChatSocketConnection = async (socket: UserSocket, io: UserSer
   const color = colorGenerator();
 
   // Disconnect older connections with the same user
-  io.sockets.sockets.forEach((value) => {
-    if (String(value.data.user._id) === String(user._id) && value.id !== socket.id) {
-      value.disconnect(true);
+  io.sockets.sockets.forEach((s) => {
+    if (String(s.data.user._id) === String(user._id) && s.id !== socket.id) {
+      s.emit("disconnectUser", false);
+      s.disconnect(true);
     }
   });
 

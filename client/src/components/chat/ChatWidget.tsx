@@ -110,7 +110,9 @@ const ChatWidget = () => {
           Send
         </Button>
         {remainingTimeToSendMessage && (
-          <div className="text-red-600 font-bold text-lg p-1">{remainingTimeToSendMessage}</div>
+          <div className="text-red-600 font-bold text-lg p-1">
+            Wait {remainingTimeToSendMessage} seconds to send a new message
+          </div>
         )}
       </div>
     </div>

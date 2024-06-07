@@ -33,19 +33,20 @@ const ChatPage: React.FC = () => {
       });
     };
     const handleBanUser = (isBanned: boolean) => {
+      console.log("isBanned", isBanned);
       if (isBanned) {
         toast.error("You have been banned from the chat");
-        disconnectUser();
-        navigate("/login");
       }
+      disconnectUser();
+      navigate("/login");
     };
 
     on("muteUserToggle", handleUpdateUser);
-    on("banUserToggle", handleBanUser);
+    on("disconnectUser", handleBanUser);
 
     return () => {
       off("muteUserToggle", handleUpdateUser);
-      off("banUserToggle", handleBanUser);
+      off("disconnectUser", handleBanUser);
     };
   });
 

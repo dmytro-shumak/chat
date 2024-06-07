@@ -25,7 +25,7 @@ export const handleChatAdminSocketConnection = async (socket: UserSocket, io: Us
     io.sockets.sockets.forEach((socket) => {
       if (String(socket.data.user._id) === id) {
         if (updatedUser) {
-          socket.emit("banUserToggle", updatedUser.isBanned);
+          socket.emit("disconnectUser", updatedUser.isBanned);
         }
         socket.disconnect(true);
       }
