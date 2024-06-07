@@ -1,17 +1,8 @@
-import { FC, ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
-import { AuthContext } from "../AuthContext/AuthContext";
-
-export interface SocketContextProps {
-  socket: Socket | null;
-  connected: boolean;
-  emit: (event: string, ...args: any[]) => void;
-  on: (event: string, callback: (...args: any[]) => void) => void;
-  off: (event: string, callback: (...args: any[]) => void) => void;
-}
-
-export const SocketContext = createContext<SocketContextProps | undefined>(undefined);
+import { useAuth } from "../auth/useAuth";
+import { SocketContext } from "./SocketContext";
 
 interface SocketProviderProps {
   url: string;
@@ -21,7 +12,7 @@ interface SocketProviderProps {
 export const SocketProvider: FC<SocketProviderProps> = ({ url, children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
-  const { token, resetToken } = useContext(AuthContext);
+  const { token, resetToken } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

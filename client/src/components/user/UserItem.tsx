@@ -1,9 +1,9 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import logoutIcon from "../../assets/icons/logout-icon.svg";
 import muteIcon from "../../assets/icons/mute-icon.svg";
 import unmuteIcon from "../../assets/icons/unmute-icon.svg";
-import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { useSocket } from "../../hook/useSocket";
+import { useAuth } from "../../context/auth/useAuth";
+import { useSocket } from "../../context/socket/useSocket";
 import { IUser, UserRole } from "../../types/user";
 import { classNames } from "../../utils/classNames";
 import BanIcon from "../icons/BanIcon";
@@ -15,7 +15,7 @@ interface Props {
 
 const UserItem: FC<Props> = ({ user, showLogoutIcon }) => {
   const { emit } = useSocket();
-  const { user: currentUser, resetToken } = useContext(AuthContext);
+  const { user: currentUser, resetToken } = useAuth();
   const isCurrentUserAdmin = currentUser?.role === UserRole.Admin;
 
   const isUserAdmin = user.role === UserRole.Admin;

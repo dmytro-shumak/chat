@@ -1,7 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { useSocket } from "../../hook/useSocket";
+import { useAuth } from "../../context/auth/useAuth";
+import { useSocket } from "../../context/socket/useSocket";
 import { LoadMessagesResponse, Message } from "../../types/message";
 import MessageItem from "../message/MessageItem";
 
@@ -12,7 +12,7 @@ const ChatWidget = () => {
   const [remainingTimeToSendMessage, setRemainingTimeToSendMessage] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
 
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);

@@ -1,6 +1,6 @@
-import { FC, useContext, useEffect, useMemo, useState } from "react";
-import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { useSocket } from "../../hook/useSocket";
+import { FC, useEffect, useMemo, useState } from "react";
+import { useAuth } from "../../context/auth/useAuth";
+import { useSocket } from "../../context/socket/useSocket";
 import { IUser, UserRole } from "../../types/user";
 import { classNames } from "../../utils/classNames";
 import UserItem from "./UserItem";
@@ -16,7 +16,7 @@ const UserPanel: FC<Props> = ({ isChatVisible, hasInteractedWithBurger }) => {
   const [offlineUsers, setOfflineUsers] = useState<IUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { user: currentUser } = useContext(AuthContext);
+  const { user: currentUser } = useAuth();
   const { on } = useSocket();
 
   const filteredOnlineUsers = useMemo(

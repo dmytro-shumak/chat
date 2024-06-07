@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { config } from "../config";
 
-const baseURL = "http://localhost:3000";
+const baseURL = config.BACKEND_URL;
 
 const instance = axios.create({
   baseURL,

@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Burger from "../components/burger/Burger";
 import ChatWidget from "../components/chat/ChatWidget";
 import UserPanel from "../components/user/UserPanel";
-import { AuthContext } from "../context/AuthContext/AuthContext";
-import { useSocket } from "../hook/useSocket";
+import { useAuth } from "../context/auth/useAuth";
+import { useSocket } from "../context/socket/useSocket";
 
 const ChatPage: React.FC = () => {
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const navigate = useNavigate();
-  const { setUser, resetToken } = useContext(AuthContext);
+  const { setUser, resetToken } = useAuth();
   const { on, off } = useSocket();
 
   const handleChatVisibility = () => {

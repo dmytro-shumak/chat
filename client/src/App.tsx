@@ -1,12 +1,12 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { AuthContext } from "./context/AuthContext/AuthContext";
+import { useAuth } from "./context/auth/useAuth";
 import ChatPage from "./pages/ChatPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
-  const { checkToken } = useContext(AuthContext);
+  const { checkToken } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +18,7 @@ function App() {
         navigate("/login");
       }
     };
+
     checkTokenValidity();
   }, [checkToken, navigate]);
 

@@ -1,36 +1,13 @@
-import {
-  Dispatch,
-  FC,
-  PropsWithChildren,
-  SetStateAction,
-  createContext,
-  useCallback,
-  useRef,
-  useState,
-} from "react";
+import { FC, PropsWithChildren, useCallback, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { post } from "../../api/axios";
+import { loginUser } from "../../api/login";
+import { LoginResponse } from "../../types/auth";
 import { IUser } from "../../types/user";
+import { AuthContext } from "./AuthContext";
 
-interface AuthContextProps {
-  token: string | null;
-  user: IUser | null;
-  loginAction: (username: string, password: string) => Promise<LoginResponse | undefined>;
-  checkToken: () => Promise<LoginResponse | undefined>;
-  resetToken: (removeTokenFromLocalStorage?: boolean) => void;
-  setUser: Dispatch<SetStateAction<IUser | null>>;
-}
-
-export interface LoginResponse {
-  token: string;
-  message: string;
-  user: IUser;
-}
-
-export const AuthContext = createContext<AuthContextProps>(null!);
-
-const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
+export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token") || "");
   const [user, setUser] = useState<IUser | null>(null);
 
@@ -39,10 +16,7 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const loginAction = async (username: string, password: string) => {
     try {
-      const data = await post<LoginResponse>("/auth/login", {
-        username,
-        password,
-      });
+      const data = await loginUser(username, password);
       if (data) {
         setUser(data.user);
         setToken(data.token);
@@ -101,5 +75,3 @@ const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export default AuthContextProvider;

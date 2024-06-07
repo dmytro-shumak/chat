@@ -1,12 +1,12 @@
-import { ChangeEvent, FC, FormEvent, useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext/AuthContext";
+import { ChangeEvent, FC, FormEvent, useState } from "react";
+import { useAuth } from "../context/auth/useAuth";
 
 const LoginPage: FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { loginAction } = useContext(AuthContext);
+  const { loginAction } = useAuth();
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
