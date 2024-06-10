@@ -45,11 +45,10 @@ export const authController = async (req: Request, res: Response) => {
     if (await bcrypt.compare(password, user.password)) {
       // Successful login
       const token = generateToken(user.toJSON());
-      res.status(200).json({ message: "Login successful", token, user: user.toJSON() });
-    } else {
-      // Invalid password
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(200).json({ message: "Login successful", token, user: user.toJSON() });
     }
+    // Invalid password
+    return res.status(401).json({ message: "Invalid password" });
   } catch (error) {
     // Handle any errors that occur during the process
     return res.status(500).json({ message: "Internal server error" });
